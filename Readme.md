@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Мария Баринова](https://up.htmlacademy.ru/javascript/21/user/1315955).
-* Наставник: `Неизвестно`.
+* Наставник: [Михал Кислый](https://htmlacademy.ru/profile/id1118577).
 
 ---
 
