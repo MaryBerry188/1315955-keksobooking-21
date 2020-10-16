@@ -1,12 +1,14 @@
+'use strict';
 
 const PIN_WIDTH = 25;
 const PIN_SCALE = 70;
-const PINS = 8;
+const NUMBER_OF_PINS = 8;
 const TYPE_HOTEL = [
-  'palace',
-  'flat',
-  'house',
-  'bungalow'];
+  `palace`,
+  `flat`,
+  `house`,
+  `bungalow`
+];
 const TITLE = [
   `Большая уютная квартира`,
   `Маленькая неуютная квартира`,
@@ -18,16 +20,24 @@ const TITLE = [
   `Неуютное бунгало по колено в воде`
 ];
 const FEATURES = [
-  'wifi',
-  'dishwasher',
-  'parking',
-  'washer',
-  'elevator',
-  'conditioner'];
+  `wifi`,
+  `dishwasher`,
+  `parking`,
+  `washer`,
+  `elevator`,
+  `conditioner`
+];
 const PHOTOS_OF_HOTEL = [
-  'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
-  'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
-  'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
+  `http://o0.github.io/assets/images/tokyo/hotel1.jpg`,
+  `http://o0.github.io/assets/images/tokyo/hotel2.jpg`,
+  `http://o0.github.io/assets/images/tokyo/hotel3.jpg`];
+const DESCRIPTION = [
+  `Описание1`,
+  `Описание2`,
+  `Описание3`,
+  `Описание4`,
+  `Описание5`,
+];
 const MAP_WIDTH = 1200;
 const MAP_START_X = 25;
 const PIN_TOP_Y = 130;
@@ -40,7 +50,6 @@ const ROOMS_MAX = 5;
 const ROOMS_MIN = 1;
 const GUESTS_MIN = 1;
 const GUESTS_MAX = 10;
-
 
 const getRandomRange = function (min, max) {
   min = Math.ceil(min);
@@ -57,43 +66,41 @@ const getRandomElement = function (array) {
   return randomStr;
 };
 
-const randomPin = function (counter) {
-  const pinLocationX = getRandomRange(MAP_START_X, MAP_WIDTH);
-  const pinLocationY = getRandomRange(PIN_TOP_Y, PIN_BOTTOM_Y);
-  const announcement =
-    {
-      'author': {
-        'avatar': `img/avatars/user0${counter}.png`
-      },
-      'offer': {
-        'title': `${TITLE[getRandomRange(0, TITLE.length)]} `,
-        'address': `Адрес предложения ${pinLocationX}, ${pinLocationY}`,
-        'price': getRandomRange(MIN_PRICE, MAX_PRICE),
-        'type': TYPE_HOTEL[getRandomRange(1, TYPE_HOTEL.length)],
-        'rooms': getRandomRange(ROOMS_MIN, ROOMS_MAX),
-        'guests': getRandomRange(GUESTS_MIN, GUESTS_MAX),
-        'checkin': `${getRandomRange(TIME_CHECKIN, TIME_CHECKOUT)}:00`,
-        'checkout': `${getRandomRange(TIME_CHECKIN, TIME_CHECKOUT)}:00`,
-        'features': getRandomElement(FEATURES),
-        'description': `Комментарий`,
-        'photos': getRandomElement(PHOTOS_OF_HOTEL)
-      },
-      'location': {
-        'x': pinLocationX,
-        'y': pinLocationY
-      }
-    }
-  ;
-  return announcement;
-};
-
 const getRandomPins = function () {
   const pins = [];
-  for (let i = 1; i <= PINS; i++) {
+  for (let i = 1; i <= NUMBER_OF_PINS; i++) {
     pins.push(randomPin(i));
   }
   return pins;
 };
+
+const randomPin = function (counter) {
+  const pinLocationX = getRandomRange(MAP_START_X, MAP_WIDTH);
+  const pinLocationY = getRandomRange(PIN_TOP_Y, PIN_BOTTOM_Y);
+  return {
+    'author': {
+      'avatar': `img/avatars/user0${counter}.png`
+    },
+    'offer': {
+      'title': `${TITLE[getRandomRange(0, TITLE.length)]} `,
+      'address': `Адрес предложения ${pinLocationX}, ${pinLocationY}`,
+      'price': getRandomRange(MIN_PRICE, MAX_PRICE),
+      'type': TYPE_HOTEL[getRandomRange(1, TYPE_HOTEL.length)],
+      'rooms': getRandomRange(ROOMS_MIN, ROOMS_MAX),
+      'guests': getRandomRange(GUESTS_MIN, GUESTS_MAX),
+      'checkin': `${getRandomRange(TIME_CHECKIN, TIME_CHECKOUT)}:00`,
+      'checkout': `${getRandomRange(TIME_CHECKIN, TIME_CHECKOUT)}:00`,
+      'features': getRandomElement(FEATURES),
+      'description': `${DESCRIPTION[getRandomRange(0, DESCRIPTION.length)]} `,
+      'photos': getRandomElement(PHOTOS_OF_HOTEL),
+    },
+    'location': {
+      'x': pinLocationX,
+      'y': pinLocationY
+    }
+  };
+};
+
 
 const pinsBase = getRandomPins();
 
@@ -103,8 +110,8 @@ const mapList = document.querySelector(`.map__pins`);
 const renderElement = function (render) {
   const element = pinTemplate.cloneNode(true);
   element.style = `left: ${render.location.x - PIN_WIDTH}px; top: ${render.location.y - PIN_SCALE}px;`;
-  element.querySelector('img').src = render.author.avatar;
-  element.querySelector('img').alt = render.offer.title;
+  element.querySelector(`img`).src = render.author.avatar;
+  element.querySelector(`img`).alt = render.offer.title;
 
   return element;
 };
