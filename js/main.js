@@ -42,8 +42,7 @@ const MAP_WIDTH = 1200;
 const MAP_START_X = 25;
 const PIN_TOP_Y = 130;
 const PIN_BOTTOM_Y = 630;
-const TIME_CHECKIN = [`12:00`, `13:00`, `14:00`];
-const TIME_CHECKOUT = [`12:00`, `13:00`, `14:00`];
+const TIME = [`12:00`, `13:00`, `14:00`];
 const MIN_PRICE = 0;
 const MAX_PRICE = 10000;
 const ROOMS_MAX = 5;
@@ -90,8 +89,8 @@ const randomPin = function (counter) {
       'type': TYPE_HOTEL[getRandomRange(1, TYPE_HOTEL.length)],
       'rooms': getRandomRange(ROOMS_MIN, ROOMS_MAX),
       'guests': getRandomRange(GUESTS_MIN, GUESTS_MAX),
-      'checkin': `${getRandomRange(TIME_CHECKIN, TIME_CHECKOUT)}:00`,
-      'checkout': `${getRandomRange(TIME_CHECKIN, TIME_CHECKOUT)}:00`,
+      'checkin': `Заезд до ${TIME[getRandomRange(0, TIME.length)]}`,
+      'checkout': `выезд до ${TIME[getRandomRange(0, TIME.length)]}`,
       'features': getRandomElement(FEATURES),
       'description': `${DESCRIPTION[getRandomRange(0, DESCRIPTION.length)]} `,
       'photos': getRandomElement(PHOTOS_OF_HOTEL),
@@ -134,7 +133,7 @@ const getOfferCard = function (element) {
   card.querySelector('.popup__text--address').textContent = element.offer.address;
   card.querySelector('.popup__text--price').textContent = `${element.offer.price} ₽/ночь`;
   card.querySelector('.popup__text--capacity').textContent = `${element.offer.rooms} комнаты для ${element.offer.guests}`;
-  card.querySelector('.popup__text--time').textContent = `Заезд после ${element.offer.checkin}, выезд до ${element.offer.checkout}`;
+  card.querySelector('.popup__text--time').textContent = `${element.offer.checkin}, ${element.offer.checkout}`;
   card.querySelector('.popup__type').textContent = element.offer.type;
   const featuresList = card.querySelector('.popup__features');
   featuresList.innerHTML = '';
