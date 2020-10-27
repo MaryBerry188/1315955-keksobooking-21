@@ -5,6 +5,9 @@ map.classList.remove(`map--faded`);
 const MAP_PINS = document.querySelector(`.map__pins`);
 const PIN_TEMPLATE = document.querySelector(`#pin`)
   .content.querySelector(`.map__pin`);
+const CARD_TEMPLATE = document.querySelector(`#card`)
+  .content
+  .querySelector(`.map__card`);
 const NUMBER_OF_PINS = 8;
 const MIN_PRICE = 1000;
 const MAX_PRICE = 10000;
@@ -25,6 +28,12 @@ const TYPE_HOTEL = [
   `house`,
   `bungalow`
 ];
+const HOTEL_TYPES_RUS = {
+  palace: `Дворец`,
+  flat: `Квартира`,
+  house: `Дом`,
+  bungalow: `Бунгало`
+};
 const FEATURES = [
   `wifi`,
   `dishwasher`,
@@ -123,53 +132,121 @@ const renderElement = function (render) {
   MAP_PINS.appendChild(element);
 };
 
-const pinsBase = randomPin();
-renderElement(pinsBase);
+//
 
+const getRoomText = function (rooms) {
+  let room;
 
-const offerCard = document.querySelector(`#card`).content.querySelector(`.map__card`);
-
-const getOfferCard = function (element) {
-  const card = offerCard.cloneNode(true);
-  card.querySelector(`.popup__avatar`).src = element.author.avatar;
-  card.querySelector(`.popup__title`).textContent = element.offer.title;
-  card.querySelector(`.popup__text--address`).textContent = element.offer.address;
-  card.querySelector(`.popup__text--price`).textContent = `${element.offer.price} ₽/ночь`;
-  card.querySelector(`.popup__text--capacity`).textContent = `${element.offer.rooms} комнаты для ${element.offer.guests}`;
-  card.querySelector(`.popup__text--time`).textContent = `Заезд после ${element.offer.checkin}, выезд до ${element.offer.checkout}`;
-  card.querySelector(`.popup__type`).textContent = element.offer.type;
-  const featuresList = card.querySelector(`.popup__features`);
-  featuresList.innerHTML = ``;
-
-  if (element.offer.features.length === 0) {
-    card.removeChild(featuresList);
+  if (rooms === 1) {
+    room = `комната`;
+  } else if (rooms === 5) {
+    room = `комнат`;
+  } else {
+    room = `комнаты`;
   }
-
-  for (let i = 0; i < element.offer.features.length; i++) {
-    const featuresItem = document.createElement(`li`);
-    featuresItem.classList.add(`.popup__feature`, `popup__feature--${element.offer.features[i]}`);
-    featuresList.appendChild(featuresItem);
-  }
-
-  card.querySelector(`.popup__description`).textContent = element.offer.description;
-  const photoList = card.querySelector(`.popup__photos`);
-  const photoItem = photoList.querySelector(`.popup__photo`);
-
-  if (element.offer.photos.length === 0) {
-    card.removeChild(photoList);
-  }
-
-  for (let j = 0; j < element.offer.photos.length; j++) {
-    const item = photoItem.cloneNode(true);
-    item.src = element.offer.photos[j];
-    photoList.appendChild(item);
-  }
-  photoList.removeChild(photoItem);
-
-  return card;
+  return room;
 };
 
-const mapFilter = map.querySelector(`.map__filters-container`);
-const pinPopupFragment = document.createDocumentFragment();
-const pinPopup = getOfferCard(pinsBase[0]);
-map.insertBefore(pinPopupFragment.appendChild(pinPopup), mapFilter);
+const getGuestText = function (guests) {
+  let guest;
+
+  if (guests === 1) {
+    guest = `гостя`;
+  } else {
+    guest = `гостей`;
+  }
+  return guest;
+};
+
+const fillSrcField = function (element, src) {
+  if (src) {
+    element.src = src;
+  } else {
+    element.style.display = `none`;
+  }
+};
+
+const fillTextField = function (element, text) {
+  if (text) {
+    element.textContent = text;
+  } else {
+    element.style.display = `none`;
+  }
+};
+
+const fillTextCapacity = function (element, rooms, guests) {
+  const ROOM_TEXT = getRoomText(rooms);
+  const GUEST_TEXT = getGuestText(guests);
+
+  if (rooms && guests) {
+    element.textContent = `${rooms} ${ROOM_TEXT} для ${guests} ${GUEST_TEXT}`;
+  } else {
+    element.style.display = `none`;
+  }
+};
+
+const fillTextTime = function (element, checkin, checkout) {
+  if (checkin && checkout) {
+    element.textContent = `Заезд после ${checkin}, выезд до ${checkout}`;
+  } else {
+    element.style.display = `none`;
+  }
+};
+
+const setFeatures = function (parent, target, source) {
+  if (source) {
+    parent.innerHTML = ``;
+    for (let i = 0; i < source.length; i++) {
+      for (let j = 0; j < target.length; j++) {
+        if (target[j].classList.contains(`popup__feature--${source[i]}`)) {
+          parent.appendChild(target[j]);
+        }
+      }
+    }
+  } else {
+    parent.style.display = `none`;
+  }
+};
+
+const addPhotos = function (target, element, source) {
+  if (source) {
+    target.innerHTML = ``;
+    for (let i = 0; i < source.length; i++) {
+      let newElement = element.cloneNode(true);
+      target.appendChild(newElement);
+      newElement.src = source[i];
+    }
+  } else {
+    target.style.display = `none`;
+  }
+};
+
+const renderCard = function (element) {
+  const FRAGMENT = document.createDocumentFragment();
+  const PARENT = document.querySelector(`.map`);
+  const ELEMENT_AFTER = document.querySelector(`.map__filters-container`);
+  const CARD = CARD_TEMPLATE.cloneNode(true);
+  const FEATURES_LIST = CARD.querySelector(`.popup__features`);
+  const FEATURE_ITEMS = CARD.querySelectorAll(`.popup__feature`);
+  const PHOTOS_LIST = CARD.querySelector(`.popup__photos`);
+  const PHOTO_ITEM = CARD.querySelector(`.popup__photo`);
+
+  fillSrcField(CARD.querySelector(`.popup__avatar`), element.author.avatar);
+  fillTextField(CARD.querySelector(`.popup__title`), element.offer.title);
+  fillTextField(CARD.querySelector(`.popup__text--address`), element.offer.address);
+  fillTextField(CARD.querySelector(`.popup__text--price`), element.offer.price);
+  fillTextField(CARD.querySelector(`.popup__type`), HOTEL_TYPES_RUS[element.offer.type]);
+  fillTextCapacity(CARD.querySelector(`.popup__text--capacity`), element.offer.rooms, element.offer.guests);
+  fillTextTime(CARD.querySelector(`.popup__text--time`), element.offer.checkin, element.offer.checkout);
+  setFeatures(FEATURES_LIST, FEATURE_ITEMS, element.offer.features);
+  fillTextField(CARD.querySelector(`.popup__description`), element.offer.description);
+  addPhotos(PHOTOS_LIST, PHOTO_ITEM, element.offer.photos);
+
+  FRAGMENT.appendChild(CARD);
+  PARENT.insertBefore(FRAGMENT, ELEMENT_AFTER);
+};
+
+//
+const pinsBase = randomPin();
+renderElement(pinsBase);
+renderCard(pinsBase[0]);
