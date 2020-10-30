@@ -1,13 +1,14 @@
 'use strict';
 
-const map = document.querySelector(`.map`);
-map.classList.remove(`map--faded`);
+const MAP = document.querySelector(`.map`);
 const MAP_PINS = document.querySelector(`.map__pins`);
-const PIN_TEMPLATE = document.querySelector(`#pin`)
-  .content.querySelector(`.map__pin`);
-const CARD_TEMPLATE = document.querySelector(`#card`)
-  .content
-  .querySelector(`.map__card`);
+const PIN_TEMPLATE = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
+const CARD_TEMPLATE = document.querySelector(`#card`).content.querySelector(`.map__card`);
+const MAP_PIN_MAIN = MAP.querySelector(`.map__pin--main`);
+const PinsSize = {
+  WIDTH: 62,
+  HEIGHT: 84
+};
 const NUMBER_OF_PINS = 8;
 const MIN_PRICE = 1000;
 const MAX_PRICE = 10000;
@@ -15,7 +16,11 @@ const ROOMS_MAX = 5;
 const ROOMS_MIN = 1;
 const GUESTS_MIN = 1;
 const GUESTS_MAX = 10;
-const TIME = [`12:00`, `13:00`, `14:00`];
+const TIME = [
+  `12:00`,
+  `13:00`,
+  `14:00`
+];
 const MAP_START_X = 25;
 const MAX_X_POSITION = MAP_PINS.clientWidth;
 const PIN_TOP_Y = 130;
@@ -34,6 +39,7 @@ const HOTEL_TYPES_RUS = {
   house: `Дом`,
   bungalow: `Бунгало`
 };
+
 const FEATURES = [
   `wifi`,
   `dishwasher`,
@@ -63,7 +69,11 @@ const PHOTOS_OF_HOTEL = [
   `http://o0.github.io/assets/images/tokyo/hotel1.jpg`,
   `http://o0.github.io/assets/images/tokyo/hotel2.jpg`,
   `http://o0.github.io/assets/images/tokyo/hotel3.jpg`];
-
+const AD_FORM = document.querySelector(`.ad-form`);
+const MAP_FILTERS = document.querySelectorAll(`.map__filters select, .map__filters fieldset, .ad-form fieldset`);
+const ADDRESS_FIELD = AD_FORM.querySelector(`#address`);
+const SELECT_ROOMS = AD_FORM.querySelector(`#room_number`);
+const SELECT_ROOM = AD_FORM.querySelector(`#capacity`);
 
 const getRandomRange = function (min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -82,7 +92,6 @@ const getRandomArray = function (array, quantity) {
   });
   return newArray;
 };
-
 
 const randomPin = function () {
   const array = [];
@@ -119,7 +128,7 @@ const randomPin = function () {
 };
 
 const renderElement = function (render) {
-  const element = document.createDocumentFragment();
+  const elements = document.createDocumentFragment();
 
   for (let i = 0; i < render.length; i++) {
     const PIN_ELEMENT = PIN_TEMPLATE.cloneNode(true);
@@ -127,12 +136,22 @@ const renderElement = function (render) {
     PIN_ELEMENT.style = `left: ${render[i].location.x - PIN_WIDTH}px; top: ${render[i].location.y - PIN_SCALE}px;`;
     PIN_ELEMENT.querySelector(`img`).src = render[i].author.avatar;
     PIN_ELEMENT.querySelector(`img`).alt = render[i].offer.title;
-    element.appendChild(PIN_ELEMENT);
+    elements.appendChild(PIN_ELEMENT);
   }
-  MAP_PINS.appendChild(element);
+  MAP_PINS.appendChild(elements);
 };
 
-//
+const disableFormFields = function (fields) {
+  for (let i = 0; i < fields.length; i++) {
+    fields[i].setAttribute(`disabled`, `disabled`);
+  }
+};
+
+const enableFormFields = function (fields) {
+  for (let i = 0; i < fields.length; i++) {
+    fields[i].removeAttribute(`disabled`);
+  }
+};
 
 const getRoomText = function (rooms) {
   let room;
@@ -246,7 +265,68 @@ const renderCard = function (element) {
   PARENT.insertBefore(FRAGMENT, ELEMENT_AFTER);
 };
 
-//
-const pinsBase = randomPin();
-renderElement(pinsBase);
-renderCard(pinsBase[0]);
+const notActiveAddress = function () {
+  const OFFSET = Math.floor(PinsSize.WIDTH / 2);
+  let xLocation = parseInt(MAP_PIN_MAIN.style.left, 10) + OFFSET;
+  let yLocation = parseInt(MAP_PIN_MAIN.style.top, 10) + OFFSET;
+  ADDRESS_FIELD.value = `${xLocation}, ${yLocation}`;
+};
+
+const fieldAddress = function () {
+  let offsetX = Math.floor(PinsSize.WIDTH / 2);
+  let offsetY = PinsSize.HEIGHT;
+  let xLocation = parseInt(MAP_PIN_MAIN.style.left, 10) + offsetX;
+  let yLocation = parseInt(MAP_PIN_MAIN.style.top, 10) + offsetY;
+  ADDRESS_FIELD.value = `${xLocation}, ${yLocation}`;
+};
+
+const guestRooms = function () {
+  let roomNumber = SELECT_ROOMS.value;
+  let guestNumber = SELECT_ROOM.value;
+
+  if (roomNumber === `100` && guestNumber !== `0`) {
+    SELECT_ROOM.setCustomValidity(`Это жилье не для гостей. Измените выбор`);
+  } else if (guestNumber === `0` && roomNumber !== `100`) {
+    SELECT_ROOM.setCustomValidity(`Это жилье для размещения гостей. Измените выбор комнат`);
+  } else if (roomNumber < guestNumber) {
+    SELECT_ROOM.setCustomValidity(`Выберете другое количество гостей`);
+  } else {
+    SELECT_ROOM.setCustomValidity(``);
+  }
+  SELECT_ROOM.reportValidity();
+};
+
+const activatePage = function () {
+  const PINS = randomPin();
+
+  enableFormFields(MAP_FILTERS);
+  MAP.classList.remove(`map--faded`);
+  AD_FORM.classList.remove(`ad-form--disabled`);
+  renderElement(PINS);
+  renderCard(PINS[0]);
+  fieldAddress();
+  guestRooms();
+};
+
+notActiveAddress();
+disableFormFields(MAP_FILTERS);
+
+MAP_PIN_MAIN.addEventListener(`mousedown`, function (evt) {
+  if (evt.button === 0) {
+    activatePage();
+  }
+});
+
+MAP_PIN_MAIN.addEventListener(`keydown`, function (evt) {
+  if (evt.key === `Enter`) {
+    activatePage();
+  }
+});
+
+SELECT_ROOM.addEventListener(`change`, function () {
+  guestRooms();
+});
+
+SELECT_ROOMS.addEventListener(`change`, function () {
+  guestRooms();
+});
