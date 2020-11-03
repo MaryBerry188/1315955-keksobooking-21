@@ -12,10 +12,11 @@ const PinsSize = {
 const NUMBER_OF_PINS = 8;
 const MIN_PRICE = 1000;
 const MAX_PRICE = 10000;
-const ROOMS_MAX = 5;
+const ROOMS_MAX = 100;
 const ROOMS_MIN = 1;
 const GUESTS_MIN = 1;
 const GUESTS_MAX = 10;
+const NOTGUESTS = 0;
 const TIME = [
   `12:00`,
   `13:00`,
@@ -74,6 +75,8 @@ const MAP_FILTERS = document.querySelectorAll(`.map__filters select, .map__filte
 const ADDRESS_FIELD = AD_FORM.querySelector(`#address`);
 const SELECT_ROOMS = AD_FORM.querySelector(`#room_number`);
 const SELECT_ROOM = AD_FORM.querySelector(`#capacity`);
+const INPUT_ERROR = `red`;
+
 
 const getRandomRange = function (min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -280,21 +283,31 @@ const fieldAddress = function () {
   ADDRESS_FIELD.value = `${xLocation}, ${yLocation}`;
 };
 
-const guestRooms = function () {
-  let roomNumber = SELECT_ROOMS.value;
-  let guestNumber = SELECT_ROOM.value;
+const selectRoom = function (evt) {
 
-  if (roomNumber === `100` && guestNumber !== `0`) {
-    SELECT_ROOM.setCustomValidity(`Это жилье не для гостей. Измените выбор`);
-  } else if (guestNumber === `0` && roomNumber !== `100`) {
-    SELECT_ROOM.setCustomValidity(`Это жилье для размещения гостей. Измените выбор комнат`);
-  } else if (roomNumber < guestNumber) {
-    SELECT_ROOM.setCustomValidity(`Выберете другое количество гостей`);
-  } else {
+  if (evt.target.matches(`#capacity`) || evt.target.matches(`#room_number`)) {
+    evt.target.setCustomValidity(``);
+    evt.target.style.boxShadow = ``;
+    SELECT_ROOMS.setCustomValidity(``);
+    SELECT_ROOMS.style.boxShadow = ``;
     SELECT_ROOM.setCustomValidity(``);
+    SELECT_ROOM.style.boxShadow = ``;
+    if (parseInt(SELECT_ROOMS.value, 10) !== ROOMS_MAX && parseInt(SELECT_ROOM.value, 10) === NOTGUESTS
+      || parseInt(SELECT_ROOMS.value, 10) === ROOMS_MAX && parseInt(SELECT_ROOM.value, 10) !== NOTGUESTS) {
+      evt.target.setCustomValidity(`Выберете другое количество гостей для ${SELECT_ROOMS.value} комнат`);
+      evt.target.style.boxShadow = INPUT_ERROR;
+    }
+
+    if (parseInt(SELECT_ROOM.value, 10) > parseInt(SELECT_ROOMS.value, 10)) {
+      evt.target.setCustomValidity(`Много гостей для ${SELECT_ROOMS.value}  комнаты`);
+      evt.target.style.boxShadow = INPUT_ERROR;
+    }
+    evt.target.reportValidity();
   }
-  SELECT_ROOM.reportValidity();
 };
+
+AD_FORM.addEventListener(`input`, selectRoom);
+
 
 const activatePage = function () {
   const PINS = randomPin();
@@ -305,7 +318,7 @@ const activatePage = function () {
   renderElement(PINS);
   renderCard(PINS[0]);
   fieldAddress();
-  guestRooms();
+  selectRoom();
 };
 
 notActiveAddress();
@@ -324,9 +337,9 @@ MAP_PIN_MAIN.addEventListener(`keydown`, function (evt) {
 });
 
 SELECT_ROOM.addEventListener(`change`, function () {
-  guestRooms();
+  selectRoom();
 });
 
 SELECT_ROOMS.addEventListener(`change`, function () {
-  guestRooms();
+  selectRoom();
 });
