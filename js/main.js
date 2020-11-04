@@ -16,7 +16,6 @@ const ROOMS_MAX = 100;
 const ROOMS_MIN = 1;
 const GUESTS_MIN = 1;
 const GUESTS_MAX = 10;
-const NOTGUESTS = 0;
 const TIME = [
   `12:00`,
   `13:00`,
@@ -73,9 +72,6 @@ const PHOTOS_OF_HOTEL = [
 const AD_FORM = document.querySelector(`.ad-form`);
 const MAP_FILTERS = document.querySelectorAll(`.map__filters select, .map__filters fieldset, .ad-form fieldset`);
 const ADDRESS_FIELD = AD_FORM.querySelector(`#address`);
-const SELECT_ROOMS = AD_FORM.querySelector(`#room_number`);
-const SELECT_ROOM = AD_FORM.querySelector(`#capacity`);
-const INPUT_ERROR = `red`;
 
 
 const getRandomRange = function (min, max) {
@@ -283,31 +279,49 @@ const fieldAddress = function () {
   ADDRESS_FIELD.value = `${xLocation}, ${yLocation}`;
 };
 
-const selectRoom = function (evt) {
+let userForm = document.querySelector(`.ad-form`);
 
-  if (evt.target.matches(`#capacity`) || evt.target.matches(`#room_number`)) {
-    evt.target.setCustomValidity(``);
-    evt.target.style.boxShadow = ``;
-    SELECT_ROOMS.setCustomValidity(``);
-    SELECT_ROOMS.style.boxShadow = ``;
-    SELECT_ROOM.setCustomValidity(``);
-    SELECT_ROOM.style.boxShadow = ``;
-    if (parseInt(SELECT_ROOMS.value, 10) !== ROOMS_MAX && parseInt(SELECT_ROOM.value, 10) === NOTGUESTS
-      || parseInt(SELECT_ROOMS.value, 10) === ROOMS_MAX && parseInt(SELECT_ROOM.value, 10) !== NOTGUESTS) {
-      evt.target.setCustomValidity(`Выберете другое количество гостей для ${SELECT_ROOMS.value} комнат`);
-      evt.target.style.boxShadow = INPUT_ERROR;
+let setDisabledValue = function (elements, values) {
+  for (let i = 0; i < elements.length; i++) {
+    elements[i].disabled = false;
+    if (values.indexOf(elements[i].value) > -1) {
+      elements[i].disabled = true;
     }
-
-    if (parseInt(SELECT_ROOM.value, 10) > parseInt(SELECT_ROOMS.value, 10)) {
-      evt.target.setCustomValidity(`Много гостей для ${SELECT_ROOMS.value}  комнаты`);
-      evt.target.style.boxShadow = INPUT_ERROR;
-    }
-    evt.target.reportValidity();
   }
 };
 
-AD_FORM.addEventListener(`input`, selectRoom);
+let roomsInputElement = userForm.querySelector(`select[name="rooms"]`);
 
+let calculateRoomsAndCapacity = function () {
+  let capacityInputSelect = userForm.querySelector(`select[name="capacity"]`);
+  let capacityOptionOptions = capacityInputSelect.querySelectorAll(`option`);
+  let roomsInputValue = roomsInputElement.value;
+
+  switch (roomsInputValue) {
+    case `1`:
+      setDisabledValue(capacityOptionOptions, [`0`, `2`, `3`]);
+      capacityOptionOptions[0].selected = true;
+      break;
+    case `2`:
+      setDisabledValue(capacityOptionOptions, [`0`, `3`]);
+      capacityOptionOptions[1].selected = true;
+      break;
+    case `3`:
+      setDisabledValue(capacityOptionOptions, [`0`]);
+      capacityOptionOptions[2].selected = true;
+      break;
+    case `100`:
+      setDisabledValue(capacityOptionOptions, [`1`, `2`, `3`]);
+      capacityOptionOptions[3].selected = true;
+      break;
+  }
+};
+
+let roomsInputChangeHandler = function () {
+  calculateRoomsAndCapacity();
+};
+
+roomsInputElement.addEventListener(`change`, roomsInputChangeHandler);
 
 const activatePage = function () {
   const PINS = randomPin();
@@ -318,7 +332,6 @@ const activatePage = function () {
   renderElement(PINS);
   renderCard(PINS[0]);
   fieldAddress();
-  selectRoom();
 };
 
 notActiveAddress();
@@ -336,10 +349,3 @@ MAP_PIN_MAIN.addEventListener(`keydown`, function (evt) {
   }
 });
 
-SELECT_ROOM.addEventListener(`change`, function () {
-  selectRoom();
-});
-
-SELECT_ROOMS.addEventListener(`change`, function () {
-  selectRoom();
-});
