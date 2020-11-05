@@ -7,8 +7,10 @@ const CARD_TEMPLATE = document.querySelector(`#card`).content.querySelector(`.ma
 const MAP_PIN_MAIN = MAP.querySelector(`.map__pin--main`);
 const PinsSize = {
   WIDTH: 62,
-  HEIGHT: 84
+  HEIGHT: 84,
+  OFFSET_X: 31
 };
+const PINS = [];
 const NUMBER_OF_PINS = 8;
 const MIN_PRICE = 1000;
 const MAX_PRICE = 10000;
@@ -69,11 +71,22 @@ const PHOTOS_OF_HOTEL = [
   `http://o0.github.io/assets/images/tokyo/hotel1.jpg`,
   `http://o0.github.io/assets/images/tokyo/hotel2.jpg`,
   `http://o0.github.io/assets/images/tokyo/hotel3.jpg`];
+
+const HOTEL_TYPES_PRICE = {
+  palace: `10000`,
+  flat: `1000`,
+  house: `5000`,
+  bungalow: `0`
+};
 const AD_FORM = document.querySelector(`.ad-form`);
 const MAP_FILTERS = document.querySelectorAll(`.map__filters select, .map__filters fieldset, .ad-form fieldset`);
 const ADDRESS_FIELD = AD_FORM.querySelector(`#address`);
-
-
+const AD_TYPE = AD_FORM.querySelector(`#type`);
+const AD_PRICE = AD_FORM.querySelector(`#price`);
+const AD_TIME_IN = AD_FORM.querySelector(`#timein`);
+const AD_TIME_OUT = AD_FORM.querySelector(`#timeout`);
+const AD_ROOM_NUMBER = AD_FORM.querySelector(`#room_number`);
+const CAPACITY = AD_FORM.querySelector(`#capacity`);
 const getRandomRange = function (min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 };
@@ -92,9 +105,7 @@ const getRandomArray = function (array, quantity) {
   return newArray;
 };
 
-const randomPin = function () {
-  const array = [];
-
+const randomPin = function (array) {
   for (let i = 0; i < NUMBER_OF_PINS; i++) {
     const pinLocationX = getRandomRange(MAP_START_X, MAX_X_POSITION);
     const pinLocationY = getRandomRange(PIN_TOP_Y, PIN_BOTTOM_Y);
@@ -123,8 +134,8 @@ const randomPin = function () {
       }
     };
   }
-  return array;
 };
+
 
 const renderElement = function (render) {
   const elements = document.createDocumentFragment();
@@ -241,7 +252,6 @@ const addPhotos = function (target, element, source) {
 
 const renderCard = function (element) {
   const FRAGMENT = document.createDocumentFragment();
-  const PARENT = document.querySelector(`.map`);
   const ELEMENT_AFTER = document.querySelector(`.map__filters-container`);
   const CARD = CARD_TEMPLATE.cloneNode(true);
   const FEATURES_LIST = CARD.querySelector(`.popup__features`);
@@ -261,22 +271,77 @@ const renderCard = function (element) {
   addPhotos(PHOTOS_LIST, PHOTO_ITEM, element.offer.photos);
 
   FRAGMENT.appendChild(CARD);
-  PARENT.insertBefore(FRAGMENT, ELEMENT_AFTER);
+  MAP.insertBefore(FRAGMENT, ELEMENT_AFTER);
 };
 
-const notActiveAddress = function () {
-  const OFFSET = Math.floor(PinsSize.WIDTH / 2);
-  let xLocation = parseInt(MAP_PIN_MAIN.style.left, 10) + OFFSET;
-  let yLocation = parseInt(MAP_PIN_MAIN.style.top, 10) + OFFSET;
-  ADDRESS_FIELD.value = `${xLocation}, ${yLocation}`;
-};
-
-const fieldAddress = function () {
-  let offsetX = Math.floor(PinsSize.WIDTH / 2);
-  let offsetY = PinsSize.HEIGHT;
+const fieldAddress = function (offsetX, offsetY) {
   let xLocation = parseInt(MAP_PIN_MAIN.style.left, 10) + offsetX;
   let yLocation = parseInt(MAP_PIN_MAIN.style.top, 10) + offsetY;
   ADDRESS_FIELD.value = `${xLocation}, ${yLocation}`;
+};
+
+const onCardEscPress = function (evt) {
+  if (evt.key === `Escape`) {
+    evt.preventDefault();
+    closeCard();
+  }
+};
+
+const closeCard = function () {
+  const ELEMENT = MAP.querySelector(`.map__card`);
+  MAP.removeChild(ELEMENT);
+  document.removeEventListener(`keydown`, onCardEscPress);
+};
+
+const showCard = function (element) {
+  let CARD = MAP.querySelector(`.map__card`);
+
+  if (CARD) {
+    MAP.removeChild(CARD);
+  }
+
+  renderCard(element);
+
+  CARD = MAP.querySelector(`.map__card`);
+
+  document.addEventListener(`keydown`, onCardEscPress);
+
+  CARD.querySelector(`.popup__close`).addEventListener(`click`, function () {
+    closeCard();
+  });
+
+  CARD.querySelector(`.popup__close`).addEventListener(`keydown`, function (evt) {
+    if (evt.key === `Enter`) {
+      closeCard();
+    }
+  });
+};
+
+const setPinHandlers = function (array) {
+  const PIN_ELEMENTS = MAP.querySelectorAll(`.map__pin:not(.map__pin--main)`);
+  for (let i = 0; i < array.length; i++) {
+    PIN_ELEMENTS[i].addEventListener(`click`, function () {
+      showCard(array[i]);
+    });
+  }
+};
+
+const checkValidType = function () {
+  let type = AD_TYPE.value;
+  let minPrice = HOTEL_TYPES_PRICE[type];
+
+  AD_PRICE.setAttribute(`placeholder`, minPrice);
+  AD_PRICE.setAttribute(`min`, minPrice);
+};
+
+const checkValidTime = function (timeSource, timeChange) {
+  const time = timeChange.options;
+
+  for (let i = 0; i < time.length; i++) {
+    time[i].removeAttribute(`selected`);
+  }
+
+  time[timeSource.selectedIndex].setAttribute(`selected`, `selected`);
 };
 
 let userForm = document.querySelector(`.ad-form`);
@@ -323,29 +388,56 @@ let roomsInputChangeHandler = function () {
 
 roomsInputElement.addEventListener(`change`, roomsInputChangeHandler);
 
-const activatePage = function () {
-  const PINS = randomPin();
-
-  enableFormFields(MAP_FILTERS);
-  MAP.classList.remove(`map--faded`);
-  AD_FORM.classList.remove(`ad-form--disabled`);
-  renderElement(PINS);
-  renderCard(PINS[0]);
-  fieldAddress();
-};
-
-notActiveAddress();
-disableFormFields(MAP_FILTERS);
-
-MAP_PIN_MAIN.addEventListener(`mousedown`, function (evt) {
+const onMousePress = function (evt) {
   if (evt.button === 0) {
     activatePage();
   }
-});
+};
 
-MAP_PIN_MAIN.addEventListener(`keydown`, function (evt) {
+const onEnterPress = function (evt) {
   if (evt.key === `Enter`) {
     activatePage();
   }
+};
+
+const activatePage = function () {
+  enableFormFields(MAP_FILTERS);
+  MAP.classList.remove(`map--faded`);
+  AD_FORM.classList.remove(`ad-form--disabled`);
+  fieldAddress(PinsSize.OFFSET_X, PinsSize.HEIGHT);
+  randomPin(PINS);
+  renderElement(PINS);
+  setPinHandlers(PINS);
+  checkValidType();
+  userForm();
+
+  MAP_PIN_MAIN.removeEventListener(`mousedown`, onMousePress);
+  MAP_PIN_MAIN.removeEventListener(`keydown`, onEnterPress);
+};
+
+fieldAddress(PinsSize.OFFSET_X, PinsSize.OFFSET_X);
+disableFormFields(MAP_FILTERS);
+
+MAP_PIN_MAIN.addEventListener(`mousedown`, onMousePress);
+MAP_PIN_MAIN.addEventListener(`keydown`, onEnterPress);
+
+AD_TYPE.addEventListener(`change`, function () {
+  checkValidType();
+});
+
+AD_TIME_IN.addEventListener(`change`, function () {
+  checkValidTime(AD_TIME_IN, AD_TIME_OUT);
+});
+
+AD_TIME_OUT.addEventListener(`change`, function () {
+  checkValidTime(AD_TIME_OUT, AD_TIME_IN);
+});
+
+CAPACITY.addEventListener(`change`, function () {
+  userForm();
+});
+
+AD_ROOM_NUMBER.addEventListener(`change`, function () {
+  userForm();
 });
 
