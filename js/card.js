@@ -99,27 +99,27 @@
     }
   };
 
-  window.renderCard = function (element) {
+  window.renderCard = function (pin) {
     const FRAGMENT = document.createDocumentFragment();
     const ELEMENT_AFTER = document.querySelector(`.map__filters-container`);
-    const CARD = CARD_TEMPLATE.cloneNode(true);
-    const FEATURES_LIST = CARD.querySelector(`.popup__features`);
-    const FEATURE_ITEMS = CARD.querySelectorAll(`.popup__feature`);
-    const PHOTOS_LIST = CARD.querySelector(`.popup__photos`);
-    const PHOTO_ITEM = CARD.querySelector(`.popup__photo`);
+    const CARD_TEMPL = CARD_TEMPLATE.cloneNode(true);
+    const FEATURES_LIST = CARD_TEMPL.querySelector(`.popup__features`);
+    const FEATURE_ITEMS = CARD_TEMPL.querySelectorAll(`.popup__feature`);
+    const PHOTOS_LIST = CARD_TEMPL.querySelector(`.popup__photos`);
+    const PHOTO_ITEM = CARD_TEMPL.querySelector(`.popup__photo`);
 
-    fillSrcField(CARD.querySelector(`.popup__avatar`), element.author.avatar);
-    fillTextField(CARD.querySelector(`.popup__title`), element.offer.title);
-    fillTextField(CARD.querySelector(`.popup__text--address`), element.offer.address);
-    fillTextField(CARD.querySelector(`.popup__text--price`), element.offer.price);
-    fillTextField(CARD.querySelector(`.popup__type`), HOTEL_TYPES_RUS[element.offer.type]);
-    fillTextCapacity(CARD.querySelector(`.popup__text--capacity`), element.offer.rooms, element.offer.guests);
-    fillTextTime(CARD.querySelector(`.popup__text--time`), element.offer.checkin, element.offer.checkout);
-    setFeatures(FEATURES_LIST, FEATURE_ITEMS, element.offer.features);
-    fillTextField(CARD.querySelector(`.popup__description`), element.offer.description);
-    addPhotos(PHOTOS_LIST, PHOTO_ITEM, element.offer.photos);
+    fillSrcField(CARD_TEMPL.querySelector(`.popup__avatar`), pin.author.avatar);
+    fillTextField(CARD_TEMPL.querySelector(`.popup__title`), pin.offer.title);
+    fillTextField(CARD_TEMPL.querySelector(`.popup__text--address`), pin.offer.address);
+    fillTextField(CARD_TEMPL.querySelector(`.popup__text--price`), pin.offer.price);
+    fillTextField(CARD_TEMPL.querySelector(`.popup__type`), HOTEL_TYPES_RUS[pin.offer.type]);
+    fillTextCapacity(CARD_TEMPL.querySelector(`.popup__text--capacity`), pin.offer.rooms, pin.offer.guests);
+    fillTextTime(CARD_TEMPL.querySelector(`.popup__text--time`), pin.offer.checkin, pin.offer.checkout);
+    setFeatures(FEATURES_LIST, FEATURE_ITEMS, pin.offer.features);
+    fillTextField(CARD_TEMPL.querySelector(`.popup__description`), pin.offer.description);
+    addPhotos(PHOTOS_LIST, PHOTO_ITEM, pin.offer.photos);
 
-    FRAGMENT.appendChild(CARD);
+    FRAGMENT.appendChild(CARD_TEMPL);
     MAP.insertBefore(FRAGMENT, ELEMENT_AFTER);
   };
 })();

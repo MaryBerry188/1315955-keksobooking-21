@@ -11,23 +11,18 @@
   const AD_TIME_IN = AD_FORM.querySelector(`#timein`);
   const AD_TIME_OUT = AD_FORM.querySelector(`#timeout`);
   const AD_ROOM_NUMBER = AD_FORM.querySelector(`#room_number`);
-  const CAPACITY = AD_FORM.querySelector(`#capacity`); const HOTEL_TYPES_PRICE = {
+  const CAPACITY = AD_FORM.querySelector(`#capacity`);
+  const HOTEL_TYPES_PRICE = {
     palace: `10000`,
     flat: `1000`,
     house: `5000`,
     bungalow: `0`
   };
 
-
-  window.form = {
-    fieldAddress: function (offsetX, offsetY) {
-      let xLocation = parseInt(MAP_PIN_MAIN.style.left, 10) + offsetX;
-      let yLocation = parseInt(MAP_PIN_MAIN.style.top, 10) + offsetY;
-      ADDRESS_FIELD.value = `${xLocation}, ${yLocation}`;
-    },
-    activateForm: function () {
-      userForm();
-    }
+  window.fieldAddress = function (offsetX, offsetY) {
+    let xLocation = parseInt(MAP_PIN_MAIN.style.left, 10) + offsetX;
+    let yLocation = parseInt(MAP_PIN_MAIN.style.top, 10) + offsetY;
+    ADDRESS_FIELD.value = `${xLocation}, ${yLocation}`;
   };
 
   const checkValidType = function () {
@@ -38,8 +33,7 @@
     AD_PRICE.setAttribute(`min`, minPrice);
   };
 
-
-  let userForm = document.querySelector(`.ad-form`);
+  const userForm = document.querySelector(`.ad-form`);
 
   let setDisabledValue = function (elements, values) {
     for (let i = 0; i < elements.length; i++) {
@@ -92,6 +86,13 @@
 
     time[timeSource.selectedIndex].setAttribute(`selected`, `selected`);
   };
+
+  const activateForm = function () {
+    checkValidType();
+    userForm();
+  };
+
+  activateForm();
 
   AD_TYPE.addEventListener(`change`, function () {
     checkValidType();

@@ -11,13 +11,13 @@
     OFFSET_X: 31
   };
 
-  const disableFormFields = function (fields) {
+  const disabledPage = function (fields) {
     for (let i = 0; i < fields.length; i++) {
       fields[i].setAttribute(`disabled`, `disabled`);
     }
   };
 
-  const enableFormFields = function (fields) {
+  const enablePage = function (fields) {
     for (let i = 0; i < fields.length; i++) {
       fields[i].removeAttribute(`disabled`);
     }
@@ -38,19 +38,16 @@
   const activatePage = function () {
     const PINS = window.randomPin();
 
-    enableFormFields(MAP_FILTERS);
+    enablePage(MAP_FILTERS);
     MAP.classList.remove(`map--faded`);
     AD_FORM.classList.remove(`ad-form--disabled`);
-    window.form.fieldAddress(PinsSize.OFFSET_X, PinsSize.HEIGHT);
-    window.form.activateForm();
     window.renderElement(PINS);
-
     MAP_PIN_MAIN.removeEventListener(`mousedown`, onMouseLeftPress);
     MAP_PIN_MAIN.removeEventListener(`keydown`, onEnterPress);
   };
 
-  disableFormFields(MAP_FILTERS);
-  window.form.fieldAddress(PinsSize.OFFSET_X, PinsSize.OFFSET_X);
+  disabledPage(MAP_FILTERS);
+  window.fieldAddress(PinsSize.OFFSET_X, PinsSize.OFFSET_X);
   MAP_PIN_MAIN.addEventListener(`mousedown`, onMouseLeftPress);
   MAP_PIN_MAIN.addEventListener(`keydown`, onEnterPress);
 })();
