@@ -4,15 +4,15 @@
   const MAP = document.querySelector(`.map`);
   const MAP_PINS = document.querySelector(`.map__pins`);
   const MAP_PIN_MAIN = MAP.querySelector(`.map__pin--main`);
-  const MainPinDimensions = {
+  const PinsSize = {
     WIDTH: 62,
     HEIGHT: 84,
     OFFSET_X: 31
   };
-  const MIN_X_POSITION = 0 - (MainPinDimensions.WIDTH / 2);
-  const MAX_X_POSITION = MAP_PINS.clientWidth - (MainPinDimensions.WIDTH / 2);
-  const MIN_Y_POSITION = 130 - MainPinDimensions.HEIGHT;
-  const MAX_Y_POSITION = 630 - MainPinDimensions.HEIGHT;
+  const MIN_X_POSITION = 0 - (PinsSize.WIDTH / 2);
+  const MAX_X_POSITION = MAP_PINS.clientWidth - (PinsSize.WIDTH / 2);
+  const MIN_Y_POSITION = 130 - PinsSize.HEIGHT;
+  const MAX_Y_POSITION = 630 - PinsSize.HEIGHT;
 
   const dragMainPin = function (evt) {
     evt.preventDefault();
@@ -56,7 +56,7 @@
       checkValidPosition(newCoords);
       MAP_PIN_MAIN.style.top = (newCoords.y) + `px`;
       MAP_PIN_MAIN.style.left = (newCoords.x) + `px`;
-      window.fieldAddress(MainPinDimensions.OFFSET_X, MainPinDimensions.HEIGHT);
+      window.fieldAddress(PinsSize.OFFSET_X, PinsSize.HEIGHT);
     };
 
     const onMouseMove = function (moveEvt) {

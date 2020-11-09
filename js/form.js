@@ -10,8 +10,6 @@
   const AD_PRICE = AD_FORM.querySelector(`#price`);
   const AD_TIME_IN = AD_FORM.querySelector(`#timein`);
   const AD_TIME_OUT = AD_FORM.querySelector(`#timeout`);
-  const AD_ROOM_NUMBER = AD_FORM.querySelector(`#room_number`);
-  const CAPACITY = AD_FORM.querySelector(`#capacity`);
   const HOTEL_TYPES_PRICE = {
     palace: `10000`,
     flat: `1000`,
@@ -89,7 +87,6 @@
 
   const activateForm = function () {
     checkValidType();
-    userForm();
   };
 
   activateForm();
@@ -104,13 +101,5 @@
 
   AD_TIME_OUT.addEventListener(`change`, function () {
     checkValidTime(AD_TIME_OUT, AD_TIME_IN);
-  });
-
-  CAPACITY.addEventListener(`change`, function () {
-    userForm();
-  });
-
-  AD_ROOM_NUMBER.addEventListener(`change`, function () {
-    userForm();
   });
 })();

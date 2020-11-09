@@ -2,6 +2,7 @@
 
 (function () {
   const MAP = document.querySelector(`.map`);
+  const MAP_PINS = document.querySelector(`.map__pins`);
   const MAP_PIN_MAIN = MAP.querySelector(`.map__pin--main`);
   const AD_FORM = document.querySelector(`.ad-form`);
   const MAP_FILTERS = document.querySelectorAll(`.map__filters select, .map__filters fieldset, .ad-form fieldset`);
@@ -35,13 +36,33 @@
     }
   };
 
-  const activatePage = function () {
-    const PINS = window.randomPin();
+  const errorHandler = function (errorMessage) {
+    const node = document.createElement(`div`);
+    node.style = `z-index: 100; margin: 0 auto; text-align: center; background-color: red;`;
+    node.style.position = `absolute`;
+    node.style.left = 0;
+    node.style.right = 0;
+    node.style.fontSize = `30px`;
 
+    node.textContent = errorMessage;
+    document.body.insertAdjacentElement(`afterbegin`, node);
+  };
+
+  const successHandler = function (pins) {
+    const FRAGMENT = document.createDocumentFragment();
+
+    for (let i = 0; i < pins.length; i++) {
+      FRAGMENT.appendChild(window.renderElement(pins[i]));
+    }
+    MAP_PINS.appendChild(FRAGMENT);
+  };
+
+  const activatePage = function () {
     enablePage(MAP_FILTERS);
     MAP.classList.remove(`map--faded`);
     AD_FORM.classList.remove(`ad-form--disabled`);
-    window.renderElement(PINS);
+    window.fieldAddress(PinsSize.OFFSET_X, PinsSize.HEIGHT);
+    window.load(successHandler, errorHandler);
     MAP_PIN_MAIN.removeEventListener(`mousedown`, onMouseLeftPress);
     MAP_PIN_MAIN.removeEventListener(`keydown`, onEnterPress);
   };
