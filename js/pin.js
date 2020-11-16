@@ -6,8 +6,18 @@
   const PIN_TEMPLATE = document.querySelector(`#pin`)
     .content
     .querySelector(`.map__pin`);
-  const OFFSET_X = 25;
-  const OFFSET_Y = 70;
+  const DISPLACEMENT_X = 25;
+  const DISPLACEMENT_Y = 70;
+
+  const cleanPin = function () {
+    const PINS = document.querySelectorAll(`.map__pin`);
+
+    PINS.forEach(function (element) {
+      if (element.classList.contains(`map__pin--active`)) {
+        element.classList.remove(`map__pin--active`);
+      }
+    });
+  };
 
   window.pin = {
     renderElements: function (pins) {
@@ -16,11 +26,13 @@
 
       for (let i = 0; i < maxPins; i++) {
         const PIN_ELEMENT = PIN_TEMPLATE.cloneNode(true);
-        PIN_ELEMENT.style = `left: ${pins[i].location.x - OFFSET_X}px; top: ${pins[i].location.y - OFFSET_Y}px;`;
+        PIN_ELEMENT.style = `left: ${pins[i].location.x - DISPLACEMENT_X}px; top: ${pins[i].location.y - DISPLACEMENT_Y}px;`;
         PIN_ELEMENT.querySelector(`img`).src = pins[i].author.avatar;
         PIN_ELEMENT.querySelector(`img`).alt = pins[i].offer.title;
         FRAGMENT.appendChild(PIN_ELEMENT);
         PIN_ELEMENT.addEventListener(`click`, function () {
+          cleanPin();
+          PIN_ELEMENT.classList.add(`map__pin--active`);
           window.map.showCard(pins[i]);
         });
       }

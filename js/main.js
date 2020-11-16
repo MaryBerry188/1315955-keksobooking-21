@@ -1,13 +1,12 @@
 'use strict';
 
 (function () {
-  const MAP_FILTERS = document.querySelector(`.map__filters`);
-  const HOUSING_TYPE = MAP_FILTERS.querySelector(`#housing-type`);
+  const FILTER = document.querySelector(`.map__filters`);
 
   window.deactivatePage();
   window.scrollTo(0, 0);
 
-  HOUSING_TYPE.addEventListener(`change`, function () {
-    window.filter.housingTypeChange(window.pins);
+  FILTER.addEventListener(`change`, function () {
+    window.filterPins(window.pins);
   });
 })();
