@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  const UPLOAD_URL = `https://21.javascript.pages.academy/keksobooking/data`;
+  const UPLOAD_URL = `https://21.javascript.pages.academy/keksobooking`;
   const PAGE = document.querySelector(`main`);
   const MAP = document.querySelector(`.map`);
   const MAP_PIN_MAIN = MAP.querySelector(`.map__pin--main`);
