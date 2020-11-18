@@ -1,19 +1,19 @@
 'use strict';
 
 (function () {
-  const LOAD_URL = `https://21.javascript.pages.academy/keksobooking/data`;
-  const MAP = document.querySelector(`.map`);
-  const MAP_PIN_MAIN = MAP.querySelector(`.map__pin--main`);
-  const AD_FORM = document.querySelector(`.ad-form`);
-  const ALL_FORM_FILDSET = document.querySelectorAll(`.ad-form fieldset, .map__filters select, .map__filters fieldset`);
-  const AD_FORM_FIELDS = document.querySelectorAll(`.ad-form fieldset`);
-  const MAP_FILTERS = document.querySelectorAll(`.map__filters select, .map__filters fieldset`);
-  const AD_FORM_RESET = document.querySelector(`.ad-form__reset`);
   const PinsSize = {
     WIDTH: 62,
     HEIGHT: 84,
     OFFSET_X: 31
   };
+  const LOAD_URL = `https://21.javascript.pages.academy/keksobooking/data`;
+  const MAP = document.querySelector(`.map`);
+  const MAP_PIN_MAIN = MAP.querySelector(`.map__pin--main`);
+  const AD_FORM = document.querySelector(`.ad-form`);
+  const ALL_FORM_FIELDSET = document.querySelectorAll(`.ad-form fieldset, .map__filters select, .map__filters fieldset`);
+  const AD_FORM_FIELDS = document.querySelectorAll(`.ad-form fieldset`);
+  const MAP_FILTERS = document.querySelectorAll(`.map__filters select, .map__filters fieldset`);
+  const AD_FORM_RESET = document.querySelector(`.ad-form__reset`);
   window.pins = [];
 
   const disabledPage = function (fields) {
@@ -57,6 +57,10 @@
     window.pin.renderElements(data);
     enablePage(MAP_FILTERS);
   };
+  const resetPage = function () {
+    window.deactivatePage();
+    AD_FORM_RESET.removeEventListener(`click`, resetPage);
+  };
 
   const activatePage = function () {
     enablePage(AD_FORM_FIELDS);
@@ -66,14 +70,12 @@
     window.load(LOAD_URL, `GET`, onDataLoadSuccess, onDataLoadError);
     MAP_PIN_MAIN.removeEventListener(`mousedown`, onMousePress);
     MAP_PIN_MAIN.removeEventListener(`keydown`, onEnterPress);
-    AD_FORM_RESET.addEventListener(`click`, function () {
-      resetPage();
-    });
+    AD_FORM_RESET.addEventListener(`click`, resetPage);
   };
 
   window.deactivatePage = function () {
     AD_FORM.reset();
-    disabledPage(ALL_FORM_FILDSET);
+    disabledPage(ALL_FORM_FIELDSET);
     window.fieldAddress(PinsSize.OFFSET_X, PinsSize.OFFSET_X);
     MAP.classList.add(`map--faded`);
     AD_FORM.classList.add(`ad-form--disabled`);
@@ -81,13 +83,5 @@
     MAP_PIN_MAIN.addEventListener(`keydown`, onEnterPress);
     window.pin.removePins();
     window.map.closeCard();
-  };
-
-  const resetPage = function (evt) {
-    evt.preventDefault();
-    window.deactivatePage();
-    AD_FORM_RESET.removeEventListener(`click`, function () {
-      resetPage();
-    });
   };
 })();

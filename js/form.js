@@ -1,6 +1,12 @@
 'use strict';
 
 (function () {
+  const HOTEL_TYPES_PRICE = {
+    palace: `10000`,
+    flat: `1000`,
+    house: `5000`,
+    bungalow: `0`
+  };
   const UPLOAD_URL = `https://21.javascript.pages.academy/keksobooking`;
   const PAGE = document.querySelector(`main`);
   const MAP = document.querySelector(`.map`);
@@ -17,12 +23,6 @@
   const AD_PRICE = AD_FORM.querySelector(`#price`);
   const AD_TIME_IN = AD_FORM.querySelector(`#timein`);
   const AD_TIME_OUT = AD_FORM.querySelector(`#timeout`);
-  const HOTEL_TYPES_PRICE = {
-    palace: `10000`,
-    flat: `1000`,
-    house: `5000`,
-    bungalow: `0`
-  };
 
   window.fieldAddress = function (offsetX, offsetY) {
     let xLocation = parseInt(MAP_PIN_MAIN.style.left, 10) + offsetX;

@@ -2,13 +2,12 @@
 
 (function () {
   const MAX_PINS = 5;
+  const DISPLACEMENT_X = 25;
+  const DISPLACEMENT_Y = 70;
   const MAP_PINS = document.querySelector(`.map__pins`);
   const PIN_TEMPLATE = document.querySelector(`#pin`)
     .content
     .querySelector(`.map__pin`);
-  const DISPLACEMENT_X = 25;
-  const DISPLACEMENT_Y = 70;
-
   const cleanPin = function () {
     const PINS = document.querySelectorAll(`.map__pin`);
 

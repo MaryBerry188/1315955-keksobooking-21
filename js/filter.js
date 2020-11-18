@@ -1,6 +1,8 @@
 'use strict';
 
 (function () {
+  const LOW_PRICE = 10000;
+  const HIGH_PRICE = 50000;
   const MAP_FILTERS = document.querySelector(`.map__filters`);
   const HOUSING_TYPE = MAP_FILTERS.querySelector(`#housing-type`);
   const HOUSING_PRICE = MAP_FILTERS.querySelector(`#housing-price`);
@@ -21,9 +23,9 @@
     if (value === `any`) {
       return true;
     } else {
-      if (pin < 10000) {
+      if (pin < LOW_PRICE) {
         price = `low`;
-      } else if (pin >= 10000 && pin <= 50000) {
+      } else if (pin >= LOW_PRICE && pin <= HIGH_PRICE) {
         price = `middle`;
       } else {
         price = `high`;

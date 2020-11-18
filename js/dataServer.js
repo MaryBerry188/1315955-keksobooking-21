@@ -1,6 +1,12 @@
 'use strict';
 
 (function () {
+  const CODE = {
+    ok: 200,
+    BadRequest: 400,
+    Unauthorized: 401,
+    NotFound: 404
+  };
   const TIMEOUT = 10000;
 
   window.load = function (url, method, onSuccess, onError, data) {
@@ -10,18 +16,18 @@
     XHR.addEventListener(`load`, function () {
       let sms;
       switch (XHR.status) {
-        case 200:
+        case CODE.ok:
           onSuccess(XHR.response);
 
           break;
 
-        case 400:
+        case CODE.BadRequest:
           sms = `Неверный запрос ${XHR.status} + ${XHR.statusText}`;
           break;
-        case 401:
+        case CODE.Unauthorized:
           sms = `Пользователь не авторизован`;
           break;
-        case 404:
+        case CODE.NotFound:
           sms = `Ничего не найдено`;
           break;
 

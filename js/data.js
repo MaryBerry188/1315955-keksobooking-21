@@ -1,18 +1,20 @@
 'use strict';
 
 (function () {
-  const MAP = document.querySelector(`.map`);
-  const MAP_PINS = document.querySelector(`.map__pins`);
-  const MAP_PIN_MAIN = MAP.querySelector(`.map__pin--main`);
   const PinsSize = {
     WIDTH: 62,
     HEIGHT: 84,
     OFFSET_X: 31
   };
+  const MAP_TOP_Y = 130;
+  const MAP_BOTTOM_Y = 630;
+  const MAP = document.querySelector(`.map`);
+  const MAP_PINS = document.querySelector(`.map__pins`);
+  const MAP_PIN_MAIN = MAP.querySelector(`.map__pin--main`);
   const MIN_X_POSITION = 0 - (PinsSize.WIDTH / 2);
   const MAX_X_POSITION = MAP_PINS.clientWidth - (PinsSize.WIDTH / 2);
-  const MIN_Y_POSITION = 130 - PinsSize.HEIGHT;
-  const MAX_Y_POSITION = 630 - PinsSize.HEIGHT;
+  const MIN_Y_POSITION = MAP_TOP_Y - PinsSize.HEIGHT;
+  const MAX_Y_POSITION = MAP_BOTTOM_Y - PinsSize.HEIGHT;
 
   const dragMainPin = function (evt) {
     evt.preventDefault();

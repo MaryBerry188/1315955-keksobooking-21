@@ -1,17 +1,16 @@
 'use strict';
 
 (function () {
-  const MAP = document.querySelector(`.map`);
-  const CARD_TEMPLATE = document.querySelector(`#card`)
-    .content
-    .querySelector(`.map__card`);
   const HOTEL_TYPES_RUS = {
     palace: `Дворец`,
     flat: `Квартира`,
     house: `Дом`,
     bungalow: `Бунгало`
   };
-
+  const MAP = document.querySelector(`.map`);
+  const CARD_TEMPLATE = document.querySelector(`#card`)
+    .content
+    .querySelector(`.map__card`);
   const getRoomText = function (rooms) {
     let room;
 
@@ -102,24 +101,24 @@
   window.renderCard = function (pin) {
     const FRAGMENT = document.createDocumentFragment();
     const ELEMENT_AFTER = document.querySelector(`.map__filters-container`);
-    const CARD_TEMPL = CARD_TEMPLATE.cloneNode(true);
-    const FEATURES_LIST = CARD_TEMPL.querySelector(`.popup__features`);
-    const FEATURE_ITEMS = CARD_TEMPL.querySelectorAll(`.popup__feature`);
-    const PHOTOS_LIST = CARD_TEMPL.querySelector(`.popup__photos`);
-    const PHOTO_ITEM = CARD_TEMPL.querySelector(`.popup__photo`);
+    const CARD_FRAGMENT = CARD_TEMPLATE.cloneNode(true);
+    const FEATURES_LIST = CARD_FRAGMENT.querySelector(`.popup__features`);
+    const FEATURE_ITEMS = CARD_FRAGMENT.querySelectorAll(`.popup__feature`);
+    const PHOTOS_LIST = CARD_FRAGMENT.querySelector(`.popup__photos`);
+    const PHOTO_ITEM = CARD_FRAGMENT.querySelector(`.popup__photo`);
 
-    fillSrcField(CARD_TEMPL.querySelector(`.popup__avatar`), pin.author.avatar);
-    fillTextField(CARD_TEMPL.querySelector(`.popup__title`), pin.offer.title);
-    fillTextField(CARD_TEMPL.querySelector(`.popup__text--address`), pin.offer.address);
-    fillTextField(CARD_TEMPL.querySelector(`.popup__text--price`), pin.offer.price);
-    fillTextField(CARD_TEMPL.querySelector(`.popup__type`), HOTEL_TYPES_RUS[pin.offer.type]);
-    fillTextCapacity(CARD_TEMPL.querySelector(`.popup__text--capacity`), pin.offer.rooms, pin.offer.guests);
-    fillTextTime(CARD_TEMPL.querySelector(`.popup__text--time`), pin.offer.checkin, pin.offer.checkout);
+    fillSrcField(CARD_FRAGMENT.querySelector(`.popup__avatar`), pin.author.avatar);
+    fillTextField(CARD_FRAGMENT.querySelector(`.popup__title`), pin.offer.title);
+    fillTextField(CARD_FRAGMENT.querySelector(`.popup__text--address`), pin.offer.address);
+    fillTextField(CARD_FRAGMENT.querySelector(`.popup__text--price`), pin.offer.price);
+    fillTextField(CARD_FRAGMENT.querySelector(`.popup__type`), HOTEL_TYPES_RUS[pin.offer.type]);
+    fillTextCapacity(CARD_FRAGMENT.querySelector(`.popup__text--capacity`), pin.offer.rooms, pin.offer.guests);
+    fillTextTime(CARD_FRAGMENT.querySelector(`.popup__text--time`), pin.offer.checkin, pin.offer.checkout);
     setFeatures(FEATURES_LIST, FEATURE_ITEMS, pin.offer.features);
-    fillTextField(CARD_TEMPL.querySelector(`.popup__description`), pin.offer.description);
+    fillTextField(CARD_FRAGMENT.querySelector(`.popup__description`), pin.offer.description);
     addPhotos(PHOTOS_LIST, PHOTO_ITEM, pin.offer.photos);
 
-    FRAGMENT.appendChild(CARD_TEMPL);
+    FRAGMENT.appendChild(CARD_FRAGMENT);
     MAP.insertBefore(FRAGMENT, ELEMENT_AFTER);
   };
 })();
